@@ -66,5 +66,5 @@
     "explorer.fileNesting.patterns": {
         "*.sln": "*.csproj"
     },
-    "dotnet.defaultSolution": "visual_navigation_maze_unity_project.sln"
+    "dotnet.defaultSolution": "navigation_envs_unity_project.sln"
 }
