@@ -5,3 +5,5 @@ navigation_envs_unity_project/Logs
 *.sln
 navigation_envs_unity_project/Temp
 build*
+*.vscode
+*.dwlt
