@@ -1,33 +1,25 @@
 import sys
+import os
+import numpy as np
+import pathlib
+import yaml
 
-# Add your local project directory to import your local trainers
-sys.path.insert(0, "./")  # or the absolute path to your project root
+script_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.abspath(os.path.join(script_dir, "../..")))
 
-# === Custom algorithm registration ===
-from trainers.settings import ALGORITHM_REGISTRY
 
-# === ML-Agents Training CLI ===
-from trainers.learn import run_cli
-
-# === Config ===
-env_path = "./YourEnv.x86_64"
-config_path = "config/sac_her_config.yaml"
-run_id = "her-parallel-run"
-num_envs = 8
-base_port = 5005
-no_graphics = True
-
-# === Construct CLI Arguments ===
-cli_args = [
-    config_path,
-    "--run-id", run_id,
-    "--env", env_path,
-    "--num-envs", str(num_envs),
-    "--base-port", str(base_port),
-]
-
-if no_graphics:
-    cli_args.append("--no-graphics")
-
-# === Run training ===
-run_cli(cli_args)
+from mlagents.plugins.trainer_type import register_trainer_plugins
+from mlagents.trainers.ppo.trainer import PPOTrainer
+from mlagents.trainers.settings import RunOptions
+from mlagents.trainers.learn import run_training
+register_trainer_plugins()
+configuration_path = os.path.join(script_dir, "point_maze_ppo.yaml")  # update with correct YAML file name
+configuration_file = open(configuration_path, 'r')
+configuration = yaml.safe_load(configuration_file)
+configuration["env_settings"]["env_path"] = os.path.join(script_dir, "../../build/point_maze/point_maze.x86_64")
+options = RunOptions.from_dict(configuration)  # Convert to RunOptions
+run_seed = options.env_settings.seed
+if run_seed == -1:
+    run_seed = np.random.randint(0, 10000)
+num_areas = options.env_settings.num_areas
+run_training(run_seed, options, num_areas)
